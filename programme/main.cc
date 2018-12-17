@@ -13,7 +13,7 @@ typedef std::chrono::microseconds us;
 int main()
 {
     //ecran
-    sf::RenderWindow window(sf::VideoMode(1200, 800), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "SFML works!");//defined in map.hh
     Combat combat;//classe qui gere le combat
 
     //gestion du temps

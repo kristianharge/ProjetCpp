@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>
 #include <SFML/Graphics.hpp>
 #include "combat.hh"
 #include "map.hh"
@@ -6,7 +7,7 @@
 
 Combat::Combat(){
 	map = new RickMap();
-	map->printMap();
+	//map->printMap();
 }
 
 void Combat::render(sf::RenderWindow & window){
@@ -28,6 +29,7 @@ void Combat::render(sf::RenderWindow & window){
     }
 
     window.clear();
-    window.draw(cuddles);
+    map->drawMap(window);
+    usleep(100);
     window.display();
 }
