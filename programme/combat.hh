@@ -1,6 +1,6 @@
-#ifndef COMBAT_HH
-#define COMBAT_HH
+#pragma once
 #include "map.hh"
+#include "joueur.hh"
 
 class Combat{
 	public:
@@ -12,6 +12,6 @@ class Combat{
 
 	private:
 		Map *map;
+		Joueur *p1;
+		Joueur *p2;
 };
-
-#endif
