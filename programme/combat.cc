@@ -1,5 +1,4 @@
 #include <iostream>
-#include <unistd.h>
 #include <SFML/Graphics.hpp>
 #include "combat.hh"
 #include "map.hh"
@@ -30,6 +29,5 @@ void Combat::render(sf::RenderWindow & window){
 
     window.clear();
     map->drawMap(window);
-    usleep(100);
     window.display();
 }
