@@ -1,4 +1,5 @@
 #include <stdlib.h>
+
 #include <iostream>
 #include "map.hh"
 
@@ -23,11 +24,13 @@ void Map::printMap() const{
 
 void Map::drawMap(sf::RenderWindow & window){
     int i;
+    sf::Sprite sp;
 
     for (i = 0; i < taille[0]*taille[1]; i++){
-        sf::Sprite sp;
-        sp.setTexture(textures[matrix[i].first]);
-        sp.setPosition(matrix[i].second);   
+        //std::cout << " x: " << matrix[i].second.x << " y: " << matrix[i].second.y;
+        sp.setTexture(textures.find(matrix[i].first)->second);
+        sp.setPosition(matrix[i].second);
         window.draw(sp);
     }
+    //std::cout << std::endl;
 }

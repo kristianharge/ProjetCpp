@@ -5,7 +5,7 @@
 #include "rickmap.hh"
 
 RickMap::RickMap(){
-	int i;
+	int i = 0;
 
 	std::ifstream file("rickmap.txt");
   	std::string s;
@@ -54,14 +54,37 @@ RickMap::RickMap(){
 	}*/
 
 	//set Textures
-	for (i = 0; i < 18; i++){
+	//background
+	for (i = 0; i < 39; i++){
 		sf::Texture texture;
 		std::string path = "../Images/Maps/RickMap/bg/" + std::to_string(i);
 		if (!texture.loadFromFile(path + ".png"))
 		{
 		    std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
 		}
-		textures.push_back(texture);
+		textures [i] = texture;
+	}
+
+	//solid
+	for (i = 50; i < 73; i++){
+		sf::Texture texture;
+		std::string path = "../Images/Maps/RickMap/solid/" + std::to_string(i);
+		if (!texture.loadFromFile(path + ".png"))
+		{
+		    std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
+		}
+		textures [i] = texture;
+	}
+
+	//traversable
+	for (i = 100; i < 103; i++){
+		sf::Texture texture;
+		std::string path = "../Images/Maps/RickMap/traversable/" + std::to_string(i);
+		if (!texture.loadFromFile(path + ".png"))
+		{
+		    std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
+		}
+		textures [i] = texture;
 	}
 }
 
