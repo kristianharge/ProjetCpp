@@ -1,6 +1,6 @@
 #pragma once
 #include "map.hh"
-#include "joueur.hh"
+#include "p1.hh"
 
 class Combat{
 	public:
@@ -12,6 +12,6 @@ class Combat{
 
 	private:
 		Map *map;
-		Joueur *p1;
-		Joueur *p2;
+		P1 *p1;
+		//P2 *p2;
 };

@@ -34,3 +34,12 @@ void Map::drawMap(sf::RenderWindow & window){
     }
     //std::cout << std::endl;
 }
+
+char Map::numberOfTile(sf::Vector2f const & v){
+    int x, y;//coordonees en numero de tile
+
+    x = v.x/COTE;
+    y = v.y/COTE;
+
+    return matrix[x + y*taille[0]].first;
+}

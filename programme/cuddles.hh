@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "personnage.hh"
 
-class Cuddles : Personnage{
+class Cuddles : public Personnage{
 
 public:
 	Cuddles();

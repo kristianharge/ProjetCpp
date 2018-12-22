@@ -3,7 +3,7 @@
 #include <ctime>
 #include <SFML/Graphics.hpp>
 #include "combat.hh"
-#define US_PER_FRAME 1000000
+#include "variablesGlobales.hh"
 
 using namespace std;
 

@@ -1,5 +1,4 @@
-#ifndef MAP_HH
-#define MAP_HH
+#pragma once
 #include <vector>
 #include <map>
 #include <SFML/Graphics.hpp>
@@ -15,6 +14,7 @@ class Map{//convention 0->49  traversable, 50->99 solide, 100->255 plateforme tr
 		//methods
 		void printMap() const;
 		void drawMap(sf::RenderWindow & window);
+		char numberOfTile(sf::Vector2f const & v); //renvoi le numero de la tile sur la quelle on pointe
 
 	protected:
 		//contitnet la taille de la map en nombre de tiles
@@ -24,5 +24,3 @@ class Map{//convention 0->49  traversable, 50->99 solide, 100->255 plateforme tr
 		//contient les textures du tiled map
 		std::map<int, sf::Texture> textures;
 };
-
-#endif

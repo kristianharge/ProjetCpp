@@ -3,11 +3,14 @@
 #include "combat.hh"
 #include "map.hh"
 #include "rickmap.hh"
-#include "joueur.hh"
+#include "p1.hh"
+#include "vie.hh"
+#include "cuddles.hh"
 
 Combat::Combat(){
 	map = new RickMap();
-	//p1 = new Joueur();
+    Personnage p = Cuddles();
+    p1 = new P1(p);
 	//p2 = new Joueur();
 }
 
@@ -22,5 +25,11 @@ void Combat::render(sf::RenderWindow & window){
 
     window.clear();
     map->drawMap(window);
+    //manipulation des joueurs
+    p1->update(map);
+    p1->render(window);
     window.display();
+
+    //Tests
+    //std::cout << (int)map->numberOfTile(sf::Vector2f(0,32)) << std::endl;
 }
