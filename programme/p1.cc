@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "p1.hh"
+//#include "varianlesGlobales.hh"
 
 P1::P1(Personnage & p) : Joueur(p){
 	vie = new Vie (4*32, 2*32);
@@ -14,19 +15,25 @@ P1::P1(Personnage & p) : Joueur(p){
 	sprite.setTexture(texture);
 }
 
-void P1::bouger(Map * map){
-
+void P1::setTouche(){
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-		direction.x = -200.f;
-	else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		direction.x = 200.f;
+		actions[gauche] = true;
 	else
-		direction.x = 0.f;
-	
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
-		//je regarde si je touche par terre
-		if(map->numberOfTile(sf::Vector2f(position.x, position.y + TAILLEPERSO_Y)) > 49 ||
-		map->numberOfTile(sf::Vector2f(position.x + TAILLEPERSO_X, position.y + TAILLEPERSO_Y)) > 49)
-			direction.y = -250.f;
-	}
+		actions[gauche] = false;
+
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		actions[droite] = true;
+	else
+		actions[droite] = false;
+
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+		actions[haut] = true;
+	else
+		actions[haut] = false;
+
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+		actions[bas] = true;
+	else
+		actions[bas] = false;
+
 }

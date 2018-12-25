@@ -2,9 +2,7 @@
 #include <vector>
 #include <map>
 #include <SFML/Graphics.hpp>
-#define WIDTH 1600
-#define HEIGHT 960
-#define COTE 32
+#include "variablesGlobales.hh"
 
 class Map{//convention 0->49  traversable, 50->99 solide, 100->255 plateforme travesable par le bas
 	public:

@@ -3,8 +3,6 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include "attaque.hh"
-#define TAILLEPERSO_Y 96
-#define TAILLEPERSO_X 64
 
 class Personnage{
 

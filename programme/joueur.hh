@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "variablesGlobales.hh"
 #include "personnage.hh"
 #include "vie.hh"
 #include "map.hh"
@@ -15,7 +16,9 @@ public:
 	void render(sf::RenderWindow & w);
 	//autres methodes
 	void gravite(Map * map);
-	virtual void bouger(Map * map) = 0;
+	char controleColisionMap(Touche cote, Map * map);
+	void mouvement(Map * map);
+	virtual void setTouche() = 0;
 
 	
 
@@ -23,6 +26,7 @@ protected:
 	Vie *vie;
 	//Force force;
 	Personnage perso;
+	std::map<Touche,bool> actions;//actions lies aux touches
 
 	//variables sf
 	sf::Texture texture;
