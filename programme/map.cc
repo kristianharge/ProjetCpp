@@ -43,3 +43,7 @@ char Map::numberOfTile(sf::Vector2f const & v){
 
     return matrix[x + y*taille[0]].first;
 }
+
+char Map::typeDeTileParIndex(int i) const{
+    return matrix[i].first;
+}

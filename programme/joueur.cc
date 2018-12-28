@@ -1,10 +1,39 @@
 #include <SFML/Graphics.hpp>
+#include <cmath>
 #include "joueur.hh"
 #include "variablesGlobales.hh"
 
+//pour le debug
+std::ostream &operator<<(std::ostream & out, sf::Vector2f & v){
+	return out << "x= " << v.x << " y= " << v.y;
+};
+
+std::ostream &operator<<(std::ostream & out, Direction & d){
+	switch(d){
+		case n:
+			return out << "nord";
+		case ne:
+			return out << "nord est";
+		case e:
+			return out << "est";
+		case se:
+			return out << "sud est";
+		case s:
+			return out << "sud";
+		case sw:
+			return out << "sud ouest";
+		case w:
+			return out << "ouest";
+		case nw:
+			return out << "nord ouest";
+		default:
+			return out << "null";
+	}
+};
+
 Joueur::Joueur(Personnage & p){
 	perso = p;//on copie le personnage
-	direction = sf::Vector2f(0.f,0.f);
+	direction = null;
 	
 	//on initialise les touches
 	actions[gauche] = false;
@@ -16,159 +45,251 @@ Joueur::Joueur(Personnage & p){
 //methods
 //on applique les affets de la gravite
 void Joueur::gravite(Map * map){
-	
+
 	//si je peux tomber, alors je tombe.
-	if(map->numberOfTile(sf::Vector2f(position.x + TAILLEPERSO_X/2, position.y + TAILLEPERSO_Y)) < 50){
-		if(direction.y < 400)//on limite la vitesse de chute
-			direction.y += 5;
+	if(controleColisionMap(s, map) == 0 || controleColisionMap(s, map) == 0){
+		if(vitesseChute < 7)//on limite la vitesse de chute
+			vitesseChute += GRAVITY;
 	}
-	else {
-		direction.y = 0;
+	else if(vitesseChute > 0.f){
+		vitesseChute = 0.f;
 	}
 }
 
+char Joueur::controleColisionMap(Direction dir, Map * map){
+	//on regarde sur quelle tile serait le joueur, 0 => vide, 1=>traversable, 2 => solide
+	std::vector<char> ftt = std::vector<char>();//futur tile type
+	std::vector<char>::iterator it;
+	bool travesable = false;//indique si on a un traversable
 
-char Joueur::controleColisionMap(Touche cote, Map * map){
-	//on regarde si le joueur est en contact avec le cote cote, 0 => non, 1=>traversable, 2 => solide
-	int i, size = 8, ptsSol = 0, ptsTrav = 0;
-	sf::Vector2f cnt[size];//2 points de chaque cote plus 2 au milieu
-	sf::Vector2f futPos = position + direction*((float)US_PER_FRAME/1000000); //position a la prochaine frame
 
+	switch(dir){//on regarde le tile au quel on va se deplacer
+		case n:
+			if(tilePosition >= TILEDWIDTH){//si on reste dans la map
+				ftt.push_back( map->typeDeTileParIndex(tilePosition - TILEDWIDTH) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition - TILEDWIDTH + 1) );
+			} else {
+				return 2; //cest le haut de la carte
+			}
+			break;
+		case ne:
+			if(tilePosition >= TILEDWIDTH && tilePosition % TILEDWIDTH < TILEDWIDTH - 1){//si on reste dans la map
+				ftt.push_back( map->typeDeTileParIndex(tilePosition - TILEDWIDTH + TILEDTAILLEPERSO_X) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDWIDTH + TILEDTAILLEPERSO_X) );
+			} else {
+				return 2; //cest le haut de la carte
+			}
+			break;
+		case e:
+			if(tilePosition % TILEDWIDTH < TILEDWIDTH - 1){//si on reste dans la map
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X + TILEDWIDTH) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X + 2*TILEDWIDTH) );
+			} else {
+				return 2; //cest la droite de la carte
+			}
+			break;
+		case se:
+			if(tilePosition % TILEDWIDTH < TILEDWIDTH - 1 && tilePosition < TILEDWIDTH*TILEDHEIGHT){//si on reste dans la map
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X + TILEDWIDTH) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X + 2*TILEDWIDTH) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X + 3*TILEDWIDTH) );
+			} else {
+				if(tilePosition >= TILEDWIDTH*TILEDHEIGHT)
+					vie->setLevel(0.f);
+				return 2; //cest la droite de la carte
+			}
+			break;
+		case s:
+			if(tilePosition < TILEDWIDTH*TILEDHEIGHT){//si on reste dans la map
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_Y*TILEDWIDTH) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_Y*TILEDWIDTH + 1) );
+			} else {
+				vie->setLevel(0.f);//on tombe, on est mort
+				return 2;
+			}
+			break;
+		case sw:
+			if(tilePosition > 0 && tilePosition < TILEDWIDTH*TILEDHEIGHT){//si on reste dans la map
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDWIDTH - 1) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + 2*TILEDWIDTH - 1) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + 3*TILEDWIDTH - 1) );
+			} else {
+				if(tilePosition >= TILEDWIDTH*TILEDHEIGHT)
+					vie->setLevel(0.f);
+				return 2; //cest la droite de la carte
+			}
+			break;
+		case w:
+			if(tilePosition % TILEDWIDTH > 0){//si on reste dans la map
+				ftt.push_back( map->typeDeTileParIndex(tilePosition - 1) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDWIDTH - 1) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + 2*TILEDWIDTH - 1) );
+			} else {
+				return 2; //cest la droite de la carte
+			}
+			break;
+		case nw:
+			if(tilePosition > 0 && tilePosition >= TILEDWIDTH){//si on reste dans la map
+				ftt.push_back( map->typeDeTileParIndex(tilePosition - TILEDWIDTH - 1) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition - 1) );
+				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDWIDTH - 1) );
+			} else {
+				return 2; //cest la droite de la carte
+			}
+			break;
+		default:
+			return -1;//on bouge pas
+	}
 
-	switch(cote){//initialisation des ponts qu'on veut observer
-		case haut:
-			for(i = 0; i < 3; i++){//initialisation à gauche
-				cnt[i] = futPos;
-				cnt[i].x += 8*i;
-			}
-			cnt[3] = sf::Vector2f(futPos.x + COTE-1, futPos.y);
-			cnt[4] = sf::Vector2f(futPos.x + COTE+1, futPos.y);
-			for(i = 0; i < 3; i++){//initialisation à droite
-				cnt[size - i - 1] = sf::Vector2f(futPos.x + TAILLEPERSO_X - 8*i, futPos.y);
-			}
-			break;
-		case bas:
-			for(i = 0; i < 3; i++){//initialisation à gauche
-				cnt[i] = sf::Vector2f(futPos.x + 8*i, futPos.y + TAILLEPERSO_Y);
-			}
-			cnt[3] = sf::Vector2f(futPos.x + COTE-1, futPos.y + TAILLEPERSO_Y);
-			cnt[4] = sf::Vector2f(futPos.x + COTE+1, futPos.y + TAILLEPERSO_Y);
-			for(i = 0; i < 3; i++){//initialisation à droite
-				cnt[size - i - 1] = sf::Vector2f(futPos.x + TAILLEPERSO_X - 8*i, futPos.y + TAILLEPERSO_Y);
-			}
-			break;
-		case gauche:
-			for(i = 0; i < 3; i++){//initialisation en haut
-				cnt[i] = sf::Vector2f(futPos.x, futPos.y + 8*i);
-			}
-			cnt[3] = sf::Vector2f(futPos.x, futPos.y + COTE);
-			cnt[4] = sf::Vector2f(futPos.x, futPos.y + 2*COTE);
-			for(i = 0; i < 3; i++){//initialisation en bas
-				cnt[size - i - 1] = sf::Vector2f(futPos.x, futPos.y + TAILLEPERSO_Y - 8*i);
-			}
-			break;
-		case droite:
-			for(i = 0; i < 3; i++){//initialisation en haut
-				cnt[i] = sf::Vector2f(futPos.x + TAILLEPERSO_X, futPos.y + 8*i);
-			}
-			cnt[3] = sf::Vector2f(futPos.x + TAILLEPERSO_X, futPos.y + COTE);
-			cnt[4] = sf::Vector2f(futPos.x + TAILLEPERSO_X, futPos.y + 2*COTE);
-			for(i = 0; i < 3; i++){//initialisation en bas
-				cnt[size - i - 1] = sf::Vector2f(futPos.x + TAILLEPERSO_X, futPos.y + TAILLEPERSO_Y - 8*i);
-			}
-			break;
+	for (it = ftt.begin(); it != ftt.end(); it++){
+		if( *it > 49 && *it < 100)//si la taile est solide
+			return 2;
+		else if( *it > 99 || *it > 99)//cest un traversable
+			travesable = true;
+			
 	}
-	//observation
-	for(int i = 0; i < 3; i++){
-		char tile = map->numberOfTile(cnt[i]);
-		if( tile > 49){//cas ou on peux pas monter, alors on rebondis
-			if(tile < 100)
-				ptsSol++;
-			else
-				ptsTrav++;
-		}
-	}
-	if((map->numberOfTile(cnt[i]) > 49 && map->numberOfTile(cnt[i]) < 100)){
-		return 2;
-	}
-	for(int i = 0; i < 3; i++){
-		char tile = map->numberOfTile(cnt[i]);
-		if( tile > 49){//cas ou on peux pas monter, alors on rebondis
-			if(tile < 100)
-				ptsSol++;
-			else
-				ptsTrav++;
-		}
-	}
-	if(ptsSol >= 3)
-		return 2;
-	else if(ptsTrav >= 3)
+	if(travesable)
 		return 1;
 	else
 		return 0;
+}
+
+void Joueur::setFutTilePosition(Direction const dir){
+	switch(dir){
+		case n:
+			futTilePosition = tilePosition - TILEDWIDTH;
+			break;
+		case ne:
+			futTilePosition = tilePosition - TILEDWIDTH + 1;
+			break;
+		case e:
+			futTilePosition = tilePosition + 1;
+			break;
+		case se:
+			futTilePosition = tilePosition + TILEDWIDTH + 1;
+			break;
+		case s:
+			futTilePosition = tilePosition + TILEDWIDTH;
+			break;
+		case sw:
+			futTilePosition = tilePosition + TILEDWIDTH - 1;
+			break;
+		case w:
+			futTilePosition = tilePosition - 1;
+			break;
+		case nw:
+			futTilePosition = tilePosition - TILEDWIDTH - 1;
+			break;
+		default:
+			break;
+	}
+}
+
+void Joueur::deplacementImage(Map * map){
+	sf::Vector2f futPosition = sf::Vector2f((futTilePosition % TILEDWIDTH)*COTE, (futTilePosition/TILEDWIDTH)*COTE);
+	sf::Vector2f delta = futPosition - realPosition;
+
+	if(realPosition != futPosition){
+		if(direction != e && direction != w){
+			if(vitesseChute > 0)//cest uniquement un multiplicateur dans le cas du deplacement
+				realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*vitesseChute;
+			else
+				realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*(-vitesseChute);
+		}
+		else
+			realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*perso.getVitesse();
+
+		if(sqrt(pow(delta.x, 2) + pow(delta.y, 2)) <= vitesseChute || sqrt(pow(delta.x, 2) + pow(delta.y, 2)) <= perso.getVitesse()){
+		//alors on est le plus pres de la position
+			realPosition = sf::Vector2f((futTilePosition % TILEDWIDTH)*COTE, (futTilePosition/TILEDWIDTH)*COTE);
+			tilePosition = futTilePosition;
+		}
+	}
 
 }
 
 void Joueur::mouvement(Map * map){
 
-	if(controleColisionMap(haut, map) == 2){//cas ou on peux pas monter, alors on rebondis
-		actions[haut] = false;
-		direction.y = 0;
+	gravite(map);
+	setTouche();
+	if(actions[gauche]){
+		if(vitesseChute > 0)
+			direction = sw;
+		else if (vitesseChute == 0)
+			direction = w;
+		else
+			direction = nw;
 	}
-
-	//on regarde si on peux aller vers la gauche
-	if(controleColisionMap(gauche, map) != 0){//cas ou on peux pas aller a gauche
-		actions[gauche] = false;
+	else if(actions[droite]){
+		if(vitesseChute > 0)
+			direction = se;
+		else if (vitesseChute == 0)
+			direction = e;
+		else
+			direction = ne;
 	}
-
-	//on regarde si on peux aller vers la droite
-	if(controleColisionMap(droite, map) != 0){//cas ou on peux pas aller a droite
-		actions[droite] = false;
-	}
-
-	//on bouge
-	if(actions[gauche])
-		direction.x = -200.f;
-	else if(actions[droite])
-		direction.x = 200.f;
-	else
-		direction.x = 0.f;
-
+	else 
+		if(vitesseChute > 0)
+			direction = s;
+		else if (vitesseChute < 0)
+			direction = n;
+		else
+			direction = null;
 	if(actions[haut]){
-		//je regarde si je touche par terre
-		if(controleColisionMap(bas, map) != 0)
-			direction.y = -250.f;
+		if(controleColisionMap(s, map) != 0){
+			vitesseChute = -6.19f;
+		}
+	}
+	else if(actions[bas]){
+		if(controleColisionMap(s, map) == 0 && !actions[gauche] && !actions[droite])
+			vitesseChute = 10.f;
+		else if (controleColisionMap(s, map) == 1);//TODO : traversable
+	}
+		//std::cout << (int)controleColisionMap(direction, map) << std::endl;
+	if(controleColisionMap(direction, map) == 0){
+		if(futTilePosition == tilePosition)
+			setFutTilePosition(direction);
+	}
+	else if (controleColisionMap(direction, map) == 1){
+		if((direction == n || direction == ne || direction == nw) && controleColisionMap(n, map) == 1)
+			setFutTilePosition(direction);
+		else if((direction == s || direction == se || direction == sw) && controleColisionMap(s, map) == 1)
+			futTilePosition = tilePosition - TILEDWIDTH*(TILEDTAILLEPERSO_Y+1);
 	}
 
-	if(actions[bas]){
-		//je regarde si je touche par terre
-		if(controleColisionMap(bas, map) != 0){//dans ce cas on regarde s'il y a asses d'espace pour traverser
-			std::cout << "bas" << std::endl;
-			sf::Vector2f newPos = position + sf::Vector2f(0.f, 2*TAILLEPERSO_Y + COTE);
-			if(map->numberOfTile(newPos) > 49)
-				position.y += TAILLEPERSO_Y + COTE;
-		}
-		else{ //dans ce cas on accelere notre descente
-			direction.y = 400;
-		}
-	}
+
+	deplacementImage(map);
+
 }
+
+void Joueur::setTilePosition(){
+	tilePosition = realPosition.x/COTE + WIDTH*realPosition.y/(COTE*COTE);
+}
+
+/*void Joueur::setDirection(){
+	if(actions[haut]){
+
+		direction = h;
+	}
+}*/
 
 //on traite la dinamique (mouvements, vie, etc)
 void Joueur::update(Map * map){
 	vie->update(0.f);//on rafraichit la vie
-	setTouche();
-	gravite(map);//on applique la gravite
-	//std::cout << direction.y << std::endl;
+	//setTilePosition();
+	//setTouche();
+	//gravite(map);//on applique la gravite
 	mouvement(map);
 
 	//on bouge le perso
-	position = position + direction*((float)US_PER_FRAME/1000000);//on mets en frames
+	//realPosition = realPosition + direction*((float)US_PER_FRAME/1000000);//on mets en frames
 }
 
 void Joueur::render(sf::RenderWindow & w){
 	vie->render(w);
 	sprite.setTexture(texture);
-	sprite.setPosition(position);
+	sprite.setPosition(realPosition);
 	w.draw(sprite);
 }

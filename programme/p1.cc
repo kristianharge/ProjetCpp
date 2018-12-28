@@ -1,12 +1,13 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "p1.hh"
-//#include "varianlesGlobales.hh"
+//#include "variablesGlobales.hh"
 
 P1::P1(Personnage & p) : Joueur(p){
 	vie = new Vie (4*32, 2*32);
-	position = sf::Vector2f(5*32, 5*32);
-
+	tilePosition = 255;
+	futTilePosition = tilePosition;
+	realPosition = sf::Vector2f(5*32, 5*32);
 	
 	if (!texture.loadFromFile(p.getTexturePath()))
 	{
