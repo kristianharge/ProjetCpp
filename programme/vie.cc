@@ -22,10 +22,6 @@ Vie::Vie(float x, float y){
 
 }
 
-void Vie::setLevel(float l){
-	level = l;
-}
-
 //on change les parametres
 void Vie::update(float diff){
 	

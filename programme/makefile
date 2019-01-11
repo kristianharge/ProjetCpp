@@ -18,7 +18,7 @@ main.o: *.hh
 .PHONY: clean mrproper
 
 clean:
-	@rm -rf *.o
+	@rm -rf *.o $(EXEC)
 
 mrproper: clean
 	@rm -rf $(EXEC)

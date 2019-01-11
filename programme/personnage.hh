@@ -2,20 +2,21 @@
 #include <iostream>
 #include <vector>
 #include <SFML/Graphics.hpp>
-#include "attaque.hh"
+//#include "attaquecourte.hh"
 
 class Personnage{
 
 public:
 	Personnage(){};
 	~Personnage(){};
+	//getters
 	std::string getTexturePath() { return path; };
 	float getVitesse() const { return vitesse; };
+	float getPtsAttaque() {return ptsAttaque;};
 	
 
 protected:
-	//std::vector<Attaque> Attaques; //ensemble d'attaques
-	float defense; //points de defense
+	float ptsAttaque; //points d'attaque
 	float vitesse; //vitesse deplacement
 	std::string path; //image du personnage
 };

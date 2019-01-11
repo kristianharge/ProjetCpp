@@ -1,17 +1,19 @@
 #pragma once
+#include "ecran.hh"
 #include "map.hh"
 #include "p1.hh"
+#include "p2.hh"
 
-class Combat{
+class Combat : Ecran{
 	public:
 		Combat();
-		~Combat(){};
+		~Combat();
 		void processInput(){};
-		void update(){};
+		void update();
 		void render(sf::RenderWindow & window);
 
 	private:
 		Map *map;
 		P1 *p1;
-		//P2 *p2;
+		P2 *p2;
 };

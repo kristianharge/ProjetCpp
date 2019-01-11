@@ -43,6 +43,14 @@ Joueur::Joueur(Personnage & p){
 }
 
 //methods
+void Joueur::decreaseLife(float diff){
+	if(vie->getLevel() - diff < 0)
+		vie->setLevel(0);
+		//gameover
+	else
+		vie->update(diff);
+}
+
 //on applique les affets de la gravite
 void Joueur::gravite(Map * map){
 
@@ -193,10 +201,18 @@ void Joueur::deplacementImage(Map * map){
 
 	if(realPosition != futPosition){
 		if(direction != e && direction != w){
-			if(vitesseChute > 0)//cest uniquement un multiplicateur dans le cas du deplacement
-				realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*vitesseChute;
-			else
-				realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*(-vitesseChute);
+			if(vitesseChute > 0){//cest uniquement un multiplicateur dans le cas du deplacement
+				if(direction != s)
+					realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*vitesseChute*1.5f;//pas idéal mais rapide
+				else
+					realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*vitesseChute;
+			}
+			else{
+				if(direction != n)
+					realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*(-vitesseChute)*1.5f;
+				else
+					realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*(-vitesseChute);
+			}
 		}
 		else
 			realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*perso.getVitesse();
@@ -268,23 +284,25 @@ void Joueur::setTilePosition(){
 	tilePosition = realPosition.x/COTE + WIDTH*realPosition.y/(COTE*COTE);
 }
 
-/*void Joueur::setDirection(){
-	if(actions[haut]){
+void Joueur::attaqueCourte(){
+	int positionCible = adversaire->getTilePosition();
 
-		direction = h;
+	if(actions[ac]){
+		//on agis sur une tile adjacente
+		if(positionCible % TILEDWIDTH + TILEDTAILLEPERSO_X >= tilePosition % TILEDWIDTH &&
+			positionCible % TILEDWIDTH <= tilePosition % TILEDWIDTH + TILEDTAILLEPERSO_X)//traitement horizontal
+			if(positionCible / TILEDWIDTH + TILEDTAILLEPERSO_Y >= tilePosition / TILEDWIDTH &&
+			positionCible / TILEDWIDTH <= tilePosition / TILEDWIDTH + TILEDTAILLEPERSO_Y){//traitement vertical
+				adversaire->decreaseLife(perso.getPtsAttaque());
+			}
 	}
-}*/
+}
 
 //on traite la dinamique (mouvements, vie, etc)
 void Joueur::update(Map * map){
 	vie->update(0.f);//on rafraichit la vie
-	//setTilePosition();
-	//setTouche();
-	//gravite(map);//on applique la gravite
 	mouvement(map);
-
-	//on bouge le perso
-	//realPosition = realPosition + direction*((float)US_PER_FRAME/1000000);//on mets en frames
+	attaqueCourte();
 }
 
 void Joueur::render(sf::RenderWindow & w){
@@ -292,4 +310,9 @@ void Joueur::render(sf::RenderWindow & w){
 	sprite.setTexture(texture);
 	sprite.setPosition(realPosition);
 	w.draw(sprite);
+}
+
+void Joueur::mort(){
+	if (vie->getLevel() == 0)
+		;
 }

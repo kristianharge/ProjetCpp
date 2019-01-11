@@ -2,6 +2,8 @@
 #include <chrono>
 #include <ctime>
 #include <SFML/Graphics.hpp>
+#include "ecran.hh"
+#include "gameover.hh"
 #include "combat.hh"
 #include "variablesGlobales.hh"
 
@@ -14,23 +16,26 @@ int main()
 {
     //ecran
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "SFML works!");//defined in map.hh
-    Combat combat;//classe qui gere le combat
+    Ecran *ec = (Ecran*) new Combat();
 
     //gestion du temps
     int usOfWait;
 
     while (window.isOpen())
     {
+
         //gestion du temps
         auto t0 = Time::now();
-        combat.processInput();
-        combat.update();
-        combat.render(window);
+        ec->processInput();
+        ec->update();
+        ec->render(window);
         usOfWait = US_PER_FRAME - std::chrono::duration_cast<us>(Time::now() - t0).count();
         if (usOfWait < 0)
             usOfWait = 0;
         
         usleep(usOfWait);
     }
+    delete ec;
+
     return 0;
 }

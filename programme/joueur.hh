@@ -10,30 +10,38 @@ class Joueur{
 
 public:
 	Joueur(Personnage & p);
-	~Joueur(){};
+	virtual ~Joueur(){};
 	//methodes du moteur de jeu
 	void update(Map * map);
 	void render(sf::RenderWindow & w);
-	//autres methodes
-	void gravite(Map * map);
+	//seters
+	void setAdversaire(Joueur * j){adversaire = j;}
 	void setTilePosition();
 	void setFutTilePosition(Direction const dir);
+	//geters
+	int getTilePosition(){return tilePosition;};
+	//autres methodes
+	void decreaseLife(float diff);
+	void gravite(Map * map);
 	void deplacementImage(Map * map);
 	char controleColisionMap(Direction dir, Map * map);
 	void mouvement(Map * map);
+	void attaqueCourte();
 	virtual void setTouche() = 0;
 
-	
+private:
+	void mort();
 
 protected:
 	Vie *vie;
-	//Force force;
+	Joueur *adversaire;
 	Personnage perso;
 	std::map<Touche, bool> actions;//actions lies aux touches
 	Direction direction;//direction du mouvement
 	float vitesseChute; //vitesse de chute
 	int tilePosition; //indice de la tile dans la quelle notre position est
 	int futTilePosition; //indice de la future position voulue
+
 
 	//variables sf
 	sf::Texture texture;

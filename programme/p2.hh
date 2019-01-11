@@ -4,11 +4,11 @@
 #include "joueur.hh"
 //#include "force.hh"
 
-class P1 : public Joueur{
+class P2 : public Joueur{
 
 public:
-	P1(Personnage & p);
-	~P1();
+	P2(Personnage & p);
+	~P2();
 
 	void setTouche();
 

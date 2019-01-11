@@ -16,7 +16,13 @@ P1::P1(Personnage & p) : Joueur(p){
 	sprite.setTexture(texture);
 }
 
+P1::~P1(){
+	delete vie;
+}
+
 void P1::setTouche(){
+	static bool acInterrupt = false;//nous permet de controler le bouton attaque courte comme interruption
+
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		actions[gauche] = true;
 	else
@@ -37,4 +43,14 @@ void P1::setTouche(){
 	else
 		actions[bas] = false;
 
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::RControl)){
+		if(!acInterrupt){
+			actions[ac] = true;
+			acInterrupt = true;
+		}else
+			actions[ac] = false;
+	}else if (acInterrupt) {
+		actions[ac] = false;
+		acInterrupt = false;
+	}
 }

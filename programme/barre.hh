@@ -5,7 +5,10 @@ class Barre{
 
 public:
 	Barre(){}
-	~Barre(){}
+	virtual ~Barre(){}
+
+	float getLevel(){return level;};
+	void setLevel(float l){level = l;};
 	virtual void update(float diff) = 0;
 	virtual void render(sf::RenderWindow & window) = 0;
 

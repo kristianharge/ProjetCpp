@@ -2,7 +2,7 @@
 #include "cuddles.hh"
 
 Cuddles::Cuddles(){
-	defense = 0.8f;
+	ptsAttaque = 6.f;
 	vitesse = 5.f;
 	path = "../Images/Perso/Cuddles/normal.png";
 }
