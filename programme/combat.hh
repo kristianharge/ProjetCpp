@@ -11,6 +11,8 @@ class Combat : Ecran{
 		void processInput(){};
 		void update();
 		void render(sf::RenderWindow & window);
+		Joueur *winner;
+		Joueur *looser;
 
 	private:
 		Map *map;

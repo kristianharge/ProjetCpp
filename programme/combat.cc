@@ -19,13 +19,27 @@ Combat::Combat(){
 
 Combat::~Combat(){
     delete map;
-    delete p1;
-    delete p2;
+    //p1 et p2 sont delete dans gameOver
 }
+
+/*void Combat::processInput(){
+
+}*/
 
 void Combat::update(){
     p1->update(map);
     p2->update(map);
+
+    if(p1->mort()){
+        winner = p2;
+        looser = p1;
+        nextScreen = 2;
+    }
+    else if(p2->mort()){
+        winner = p1;
+        looser = p2;
+        nextScreen = 2;
+    }
 }
 
 void Combat::render(sf::RenderWindow & window){
@@ -43,7 +57,4 @@ void Combat::render(sf::RenderWindow & window){
     p1->render(window);
     p2->render(window);
     window.display();
-
-    //Tests
-    //std::cout << (int)map->numberOfTile(sf::Vector2f(0,32)) << std::endl;
 }

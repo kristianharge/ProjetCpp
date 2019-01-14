@@ -8,16 +8,18 @@ P1::P1(Personnage & p) : Joueur(p){
 	tilePosition = 255;
 	futTilePosition = tilePosition;
 	realPosition = sf::Vector2f(5*32, 5*32);
-	
-	if (!texture.loadFromFile(p.getTexturePath()))
+	texture = new sf::Texture();
+
+	if (!(*texture).loadFromFile(p.getTexturePath()))
 	{
 	    std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
 	}
-	sprite.setTexture(texture);
+	sprite.setTexture(*texture);
 }
 
 P1::~P1(){
 	delete vie;
+	delete texture;
 }
 
 void P1::setTouche(){

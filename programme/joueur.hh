@@ -19,7 +19,8 @@ public:
 	void setTilePosition();
 	void setFutTilePosition(Direction const dir);
 	//geters
-	int getTilePosition(){return tilePosition;};
+	int getTilePosition() const{return tilePosition;};
+	sf::Texture *getTexture() const{return texture;};
 	//autres methodes
 	void decreaseLife(float diff);
 	void gravite(Map * map);
@@ -29,8 +30,7 @@ public:
 	void attaqueCourte();
 	virtual void setTouche() = 0;
 
-private:
-	void mort();
+	bool mort();
 
 protected:
 	Vie *vie;
@@ -44,7 +44,7 @@ protected:
 
 
 	//variables sf
-	sf::Texture texture;
+	sf::Texture * texture;
 	sf::Sprite sprite;
 	sf::Vector2f realPosition;//position reelle dans la map
 };

@@ -307,12 +307,13 @@ void Joueur::update(Map * map){
 
 void Joueur::render(sf::RenderWindow & w){
 	vie->render(w);
-	sprite.setTexture(texture);
+	sprite.setTexture(*texture);
 	sprite.setPosition(realPosition);
 	w.draw(sprite);
 }
 
-void Joueur::mort(){
+bool Joueur::mort(){
 	if (vie->getLevel() == 0)
-		;
+		return true;
+	return false;
 }

@@ -26,9 +26,16 @@ int main()
 
         //gestion du temps
         auto t0 = Time::now();
-        ec->processInput();
-        ec->update();
-        ec->render(window);
+        switch(ec->nextScreen){
+            case 2:
+                delete ec;
+                ec = (Ecran*) new GameOver(window, ((Combat*)ec)->winner, ((Combat*)ec)->looser);
+                break;
+            default:
+                ec->processInput();
+                ec->update();
+                ec->render(window);
+        }
         usOfWait = US_PER_FRAME - std::chrono::duration_cast<us>(Time::now() - t0).count();
         if (usOfWait < 0)
             usOfWait = 0;
