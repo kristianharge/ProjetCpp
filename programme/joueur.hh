@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "variablesGlobales.hh"
 #include "personnage.hh"
 #include "vie.hh"
@@ -10,41 +11,39 @@ class Joueur{
 
 public:
 	Joueur(Personnage & p);
-	virtual ~Joueur(){};
+	virtual ~Joueur();
 	//methodes du moteur de jeu
+	virtual void processInput() = 0;
 	void update(Map * map);
-	void render(sf::RenderWindow & w);
+	void render(sf::RenderWindow & w, Map * map);
 	//seters
 	void setAdversaire(Joueur * j){adversaire = j;}
-	void setTilePosition();
-	void setFutTilePosition(Direction const dir);
 	//geters
-	int getTilePosition() const{return tilePosition;};
+	sf::Vector2f getPosition() const{return realPosition;};
 	sf::Texture *getTexture() const{return texture;};
 	//autres methodes
 	void decreaseLife(float diff);
-	void gravite(Map * map);
-	void deplacementImage(Map * map);
-	char controleColisionMap(Direction dir, Map * map);
+	bool mort();
+
+private:
+	char typeDeTile(sf::Vector2f point, sf::Vector2f dir, Map * map, char axe);
+	sf::Vector2f vecteurContraintes(sf::Vector2f dir, Map * map);
+	void gravite();
 	void mouvement(Map * map);
 	void attaqueCourte();
-	virtual void setTouche() = 0;
-
-	bool mort();
 
 protected:
 	Vie *vie;
 	Joueur *adversaire;
 	Personnage perso;
 	std::map<Touche, bool> actions;//actions lies aux touches
-	Direction direction;//direction du mouvement
-	float vitesseChute; //vitesse de chute
-	int tilePosition; //indice de la tile dans la quelle notre position est
-	int futTilePosition; //indice de la future position voulue
 
 
 	//variables sf
 	sf::Texture * texture;
 	sf::Sprite sprite;
 	sf::Vector2f realPosition;//position reelle dans la map
+	sf::Vector2f speedVector;//vecteur vitesse
+	std::vector<sf::SoundBuffer> buffers;
+	sf::Sound sound;
 };

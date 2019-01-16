@@ -1,10 +1,11 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <cmath>
 #include "joueur.hh"
 #include "variablesGlobales.hh"
 
 //pour le debug
-std::ostream &operator<<(std::ostream & out, sf::Vector2f & v){
+std::ostream &operator<<(std::ostream & out, sf::Vector2f v){
 	return out << "x= " << v.x << " y= " << v.y;
 };
 
@@ -33,14 +34,22 @@ std::ostream &operator<<(std::ostream & out, Direction & d){
 
 Joueur::Joueur(Personnage & p){
 	perso = p;//on copie le personnage
-	direction = null;
 	
 	//on initialise les touches
 	actions[gauche] = false;
 	actions[droite] = false;
 	actions[haut] = false;
 	actions[bas] = false;
+
+	speedVector = sf::Vector2f(0.f,0.f);
+	buffers.push_back(sf::SoundBuffer());
+
+	if (!buffers[0].loadFromFile("../musique/Sounds/punch.wav"))
+    std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
 }
+
+Joueur::~Joueur(){
+};
 
 //methods
 void Joueur::decreaseLife(float diff){
@@ -52,247 +61,95 @@ void Joueur::decreaseLife(float diff){
 }
 
 //on applique les affets de la gravite
-void Joueur::gravite(Map * map){
-
-	//si je peux tomber, alors je tombe.
-	if(controleColisionMap(s, map) == 0 || controleColisionMap(s, map) == 0){
-		if(vitesseChute < 7)//on limite la vitesse de chute
-			vitesseChute += GRAVITY;
-	}
-	else if(vitesseChute > 0.f){
-		vitesseChute = 0.f;
-	}
+void Joueur::gravite(){
+	float g = 0.1f;
+	
+	if(speedVector.y != 4.f)
+		speedVector.y += g;
+	
 }
 
-char Joueur::controleColisionMap(Direction dir, Map * map){
-	//on regarde sur quelle tile serait le joueur, 0 => vide, 1=>traversable, 2 => solide
-	std::vector<char> ftt = std::vector<char>();//futur tile type
-	std::vector<char>::iterator it;
-	bool travesable = false;//indique si on a un traversable
+char Joueur::typeDeTile(sf::Vector2f point, sf::Vector2f dir, Map * map, char axe){
+	//on renvoi la valeur de la tile sur l'axe demmandé
+	sf::Vector2f futpos = point + dir;
+	char nbtile;
 
-
-	switch(dir){//on regarde le tile au quel on va se deplacer
-		case n:
-			if(tilePosition >= TILEDWIDTH){//si on reste dans la map
-				ftt.push_back( map->typeDeTileParIndex(tilePosition - TILEDWIDTH) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition - TILEDWIDTH + 1) );
-			} else {
-				return 2; //cest le haut de la carte
-			}
-			break;
-		case ne:
-			if(tilePosition >= TILEDWIDTH && tilePosition % TILEDWIDTH < TILEDWIDTH - 1){//si on reste dans la map
-				ftt.push_back( map->typeDeTileParIndex(tilePosition - TILEDWIDTH + TILEDTAILLEPERSO_X) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDWIDTH + TILEDTAILLEPERSO_X) );
-			} else {
-				return 2; //cest le haut de la carte
-			}
-			break;
-		case e:
-			if(tilePosition % TILEDWIDTH < TILEDWIDTH - 1){//si on reste dans la map
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X + TILEDWIDTH) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X + 2*TILEDWIDTH) );
-			} else {
-				return 2; //cest la droite de la carte
-			}
-			break;
-		case se:
-			if(tilePosition % TILEDWIDTH < TILEDWIDTH - 1 && tilePosition < TILEDWIDTH*TILEDHEIGHT){//si on reste dans la map
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X + TILEDWIDTH) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X + 2*TILEDWIDTH) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_X + 3*TILEDWIDTH) );
-			} else {
-				if(tilePosition >= TILEDWIDTH*TILEDHEIGHT)
-					vie->setLevel(0.f);
-				return 2; //cest la droite de la carte
-			}
-			break;
-		case s:
-			if(tilePosition < TILEDWIDTH*TILEDHEIGHT){//si on reste dans la map
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_Y*TILEDWIDTH) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDTAILLEPERSO_Y*TILEDWIDTH + 1) );
-			} else {
-				vie->setLevel(0.f);//on tombe, on est mort
-				return 2;
-			}
-			break;
-		case sw:
-			if(tilePosition > 0 && tilePosition < TILEDWIDTH*TILEDHEIGHT){//si on reste dans la map
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDWIDTH - 1) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + 2*TILEDWIDTH - 1) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + 3*TILEDWIDTH - 1) );
-			} else {
-				if(tilePosition >= TILEDWIDTH*TILEDHEIGHT)
-					vie->setLevel(0.f);
-				return 2; //cest la droite de la carte
-			}
-			break;
-		case w:
-			if(tilePosition % TILEDWIDTH > 0){//si on reste dans la map
-				ftt.push_back( map->typeDeTileParIndex(tilePosition - 1) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDWIDTH - 1) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + 2*TILEDWIDTH - 1) );
-			} else {
-				return 2; //cest la droite de la carte
-			}
-			break;
-		case nw:
-			if(tilePosition > 0 && tilePosition >= TILEDWIDTH){//si on reste dans la map
-				ftt.push_back( map->typeDeTileParIndex(tilePosition - TILEDWIDTH - 1) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition - 1) );
-				ftt.push_back( map->typeDeTileParIndex(tilePosition + TILEDWIDTH - 1) );
-			} else {
-				return 2; //cest la droite de la carte
-			}
-			break;
-		default:
-			return -1;//on bouge pas
+	if(axe == 'x'){
+		nbtile = map->numberOfTile(sf::Vector2f((futpos).x, point.y));
+	}
+	else if(axe == 'y'){
+		nbtile = map->numberOfTile(sf::Vector2f(point.x, (futpos).y));
+	}
+	else{
+		std::cout << "Erreur dans les axes " << __LINE__ << " " << __FUNCTION__ << std::endl;
+		return 255;
 	}
 
-	for (it = ftt.begin(); it != ftt.end(); it++){
-		if( *it > 49 && *it < 100)//si la taile est solide
-			return 2;
-		else if( *it > 99 || *it > 99)//cest un traversable
-			travesable = true;
-			
-	}
-	if(travesable)
-		return 1;
-	else
+	if(nbtile > 99)//traversable
+			return 1;
+	else if(nbtile < 50)//vide
 		return 0;
-}
-
-void Joueur::setFutTilePosition(Direction const dir){
-	switch(dir){
-		case n:
-			futTilePosition = tilePosition - TILEDWIDTH;
-			break;
-		case ne:
-			futTilePosition = tilePosition - TILEDWIDTH + 1;
-			break;
-		case e:
-			futTilePosition = tilePosition + 1;
-			break;
-		case se:
-			futTilePosition = tilePosition + TILEDWIDTH + 1;
-			break;
-		case s:
-			futTilePosition = tilePosition + TILEDWIDTH;
-			break;
-		case sw:
-			futTilePosition = tilePosition + TILEDWIDTH - 1;
-			break;
-		case w:
-			futTilePosition = tilePosition - 1;
-			break;
-		case nw:
-			futTilePosition = tilePosition - TILEDWIDTH - 1;
-			break;
-		default:
-			break;
+	else if(nbtile > 49 && nbtile < 100)//solide
+		return 2;
+	else{
+		std::cout << "Erreur dans la tile " << __LINE__ << " " << __FUNCTION__ << std::endl;
+		return 255;
 	}
 }
 
-void Joueur::deplacementImage(Map * map){
-	sf::Vector2f futPosition = sf::Vector2f((futTilePosition % TILEDWIDTH)*COTE, (futTilePosition/TILEDWIDTH)*COTE);
-	sf::Vector2f delta = futPosition - realPosition;
+sf::Vector2f Joueur::vecteurContraintes(sf::Vector2f dir, Map * map){
+	sf::Vector2f contrainte(0.f,0.f);
+	bool cx = false, cy = false;
 
-	if(realPosition != futPosition){
-		if(direction != e && direction != w){
-			if(vitesseChute > 0){//cest uniquement un multiplicateur dans le cas du deplacement
-				if(direction != s)
-					realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*vitesseChute*1.5f;//pas idéal mais rapide
-				else
-					realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*vitesseChute;
-			}
-			else{
-				if(direction != n)
-					realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*(-vitesseChute)*1.5f;
-				else
-					realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*(-vitesseChute);
-			}
-		}
-		else
-			realPosition += delta/((float) sqrt(pow(delta.x, 2) + pow(delta.y, 2)))*perso.getVitesse();
-
-		if(sqrt(pow(delta.x, 2) + pow(delta.y, 2)) <= vitesseChute || sqrt(pow(delta.x, 2) + pow(delta.y, 2)) <= perso.getVitesse()){
-		//alors on est le plus pres de la position
-			realPosition = sf::Vector2f((futTilePosition % TILEDWIDTH)*COTE, (futTilePosition/TILEDWIDTH)*COTE);
-			tilePosition = futTilePosition;
+	for(int i = 0; i < 3; i++){
+		for (int j = 0; j < 4; j++){
+			if(typeDeTile(realPosition + sf::Vector2f(i*COTE, j*COTE), dir, map, 'x') == 2 ||
+			 typeDeTile(realPosition + sf::Vector2f(i*COTE, j*COTE), dir, map, 'x') == 1)//alors contrainte sur x
+				cx = true;
+			if(typeDeTile(realPosition + sf::Vector2f(i*COTE, j*COTE), dir, map, 'y') == 2 ||
+			typeDeTile(realPosition + sf::Vector2f(i*COTE, j*COTE), dir, map, 'y') == 1)//alors contrainte sur y
+				cy = true;
 		}
 	}
-
+	if(cx)//alors contrainte sur x
+		contrainte += sf::Vector2f(-dir.x, 0.f);
+	if(cy)
+		contrainte += sf::Vector2f(0.f, -dir.y);
+	return contrainte;
 }
 
 void Joueur::mouvement(Map * map){
-
-	gravite(map);
-	setTouche();
+	//speedVector = sf::Vector2f(0.f,0.f);
+	speedVector.x = 0.f;
+	gravite();//gravité
 	if(actions[gauche]){
-		if(vitesseChute > 0)
-			direction = sw;
-		else if (vitesseChute == 0)
-			direction = w;
-		else
-			direction = nw;
+		speedVector.x = -4.f; 
 	}
 	else if(actions[droite]){
-		if(vitesseChute > 0)
-			direction = se;
-		else if (vitesseChute == 0)
-			direction = e;
-		else
-			direction = ne;
+		speedVector.x = 4.f; 
 	}
-	else 
-		if(vitesseChute > 0)
-			direction = s;
-		else if (vitesseChute < 0)
-			direction = n;
-		else
-			direction = null;
+
 	if(actions[haut]){
-		if(controleColisionMap(s, map) != 0){
-			vitesseChute = -6.19f;
+		if(vecteurContraintes(speedVector, map).y < 0.f){//contrainte vers le haut donc on touche par terre
+			speedVector += sf::Vector2f(0.f,-5.f);
 		}
 	}
-	else if(actions[bas]){
-		if(controleColisionMap(s, map) == 0 && !actions[gauche] && !actions[droite])
-			vitesseChute = 10.f;
-		else if (controleColisionMap(s, map) == 1);//TODO : traversable
-	}
-		//std::cout << (int)controleColisionMap(direction, map) << std::endl;
-	if(controleColisionMap(direction, map) == 0){
-		if(futTilePosition == tilePosition)
-			setFutTilePosition(direction);
-	}
-	else if (controleColisionMap(direction, map) == 1){
-		if((direction == n || direction == ne || direction == nw) && controleColisionMap(n, map) == 1)
-			setFutTilePosition(direction);
-		else if((direction == s || direction == se || direction == sw) && controleColisionMap(s, map) == 1)
-			futTilePosition = tilePosition - TILEDWIDTH*(TILEDTAILLEPERSO_Y+1);
-	}
 
+	//on mets a jour avec les contraintes
+	speedVector += vecteurContraintes(speedVector, map);
+	realPosition += speedVector;
 
-	deplacementImage(map);
-
-}
-
-void Joueur::setTilePosition(){
-	tilePosition = realPosition.x/COTE + WIDTH*realPosition.y/(COTE*COTE);
 }
 
 void Joueur::attaqueCourte(){
-	int positionCible = adversaire->getTilePosition();
+	sf::Vector2f positionCible = adversaire->getPosition();
 
 	if(actions[ac]){
 		//on agis sur une tile adjacente
-		if(positionCible % TILEDWIDTH + TILEDTAILLEPERSO_X >= tilePosition % TILEDWIDTH &&
-			positionCible % TILEDWIDTH <= tilePosition % TILEDWIDTH + TILEDTAILLEPERSO_X)//traitement horizontal
-			if(positionCible / TILEDWIDTH + TILEDTAILLEPERSO_Y >= tilePosition / TILEDWIDTH &&
-			positionCible / TILEDWIDTH <= tilePosition / TILEDWIDTH + TILEDTAILLEPERSO_Y){//traitement vertical
+		if(positionCible.x + TAILLEPERSO_X + COTE >= realPosition.x && positionCible.x <= realPosition.x + TAILLEPERSO_X + COTE)//traitement horizontal
+			if(positionCible.y + TAILLEPERSO_Y >= realPosition.y &&	positionCible.y <= realPosition.y + TAILLEPERSO_Y){//traitement vertical
+				sound.setBuffer(buffers[0]);
+				sound.play();
 				adversaire->decreaseLife(perso.getPtsAttaque());
 			}
 	}
@@ -305,7 +162,7 @@ void Joueur::update(Map * map){
 	attaqueCourte();
 }
 
-void Joueur::render(sf::RenderWindow & w){
+void Joueur::render(sf::RenderWindow & w, Map * map){
 	vie->render(w);
 	sprite.setTexture(*texture);
 	sprite.setPosition(realPosition);

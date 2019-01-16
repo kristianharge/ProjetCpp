@@ -1,4 +1,5 @@
 #pragma once
+#include <SFML/Audio.hpp>
 #include "ecran.hh"
 #include "map.hh"
 #include "p1.hh"
@@ -8,7 +9,7 @@ class Combat : Ecran{
 	public:
 		Combat();
 		~Combat();
-		void processInput(){};
+		void processInput();
 		void update();
 		void render(sf::RenderWindow & window);
 		Joueur *winner;
@@ -18,4 +19,5 @@ class Combat : Ecran{
 		Map *map;
 		P1 *p1;
 		P2 *p2;
+		sf::Music *music;
 };

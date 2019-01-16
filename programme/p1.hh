@@ -10,6 +10,6 @@ public:
 	P1(Personnage & p);
 	~P1();
 
-	void setTouche();
+	void processInput();
 
 };

@@ -5,8 +5,6 @@
 
 P1::P1(Personnage & p) : Joueur(p){
 	vie = new Vie (4*32, 2*32);
-	tilePosition = 255;
-	futTilePosition = tilePosition;
 	realPosition = sf::Vector2f(5*32, 5*32);
 	texture = new sf::Texture();
 
@@ -22,7 +20,7 @@ P1::~P1(){
 	delete texture;
 }
 
-void P1::setTouche(){
+void P1::processInput(){
 	static bool acInterrupt = false;//nous permet de controler le bouton attaque courte comme interruption
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))

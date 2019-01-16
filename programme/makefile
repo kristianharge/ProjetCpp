@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-Wall -std=c++11
-LDFLAGS=-lsfml-graphics -lsfml-window -lsfml-system
+LDFLAGS=-lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 EXEC=projet
 SRC= $(wildcard *.cc)
 OBJ= $(SRC:.cc=.o)
