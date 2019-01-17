@@ -15,7 +15,7 @@ typedef std::chrono::microseconds us;
 int main()
 {
     //ecran
-    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "SFML works!");//defined in map.hh
+    sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Sunny Smash");//defined in map.hh
     Ecran *ec = (Ecran*) new Combat();
 
     //gestion du temps

@@ -46,9 +46,13 @@ Joueur::Joueur(Personnage & p){
 
 	if (!buffers[0].loadFromFile("../musique/Sounds/punch.wav"))
     std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
+
+	anim = new Animator(std::string("../Images/Perso/Cuddles"));
 }
 
 Joueur::~Joueur(){
+	delete anim;
+	delete vie;
 };
 
 //methods
@@ -164,9 +168,7 @@ void Joueur::update(Map * map){
 
 void Joueur::render(sf::RenderWindow & w, Map * map){
 	vie->render(w);
-	sprite.setTexture(*texture);
-	sprite.setPosition(realPosition);
-	w.draw(sprite);
+	anim->render(realPosition,w);
 }
 
 bool Joueur::mort(){

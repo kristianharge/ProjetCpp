@@ -6,18 +6,9 @@
 P1::P1(Personnage & p) : Joueur(p){
 	vie = new Vie (4*32, 2*32);
 	realPosition = sf::Vector2f(5*32, 5*32);
-	texture = new sf::Texture();
-
-	if (!(*texture).loadFromFile(p.getTexturePath()))
-	{
-	    std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
-	}
-	sprite.setTexture(*texture);
 }
 
 P1::~P1(){
-	delete vie;
-	delete texture;
 }
 
 void P1::processInput(){

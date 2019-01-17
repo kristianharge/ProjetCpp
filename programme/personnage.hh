@@ -19,4 +19,5 @@ protected:
 	float ptsAttaque; //points d'attaque
 	float vitesse; //vitesse deplacement
 	std::string path; //image du personnage
+	std::string * _path;
 };

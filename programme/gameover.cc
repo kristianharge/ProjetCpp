@@ -12,12 +12,8 @@ GameOver::GameOver(sf::RenderWindow & window, Joueur * winner, Joueur * looser) 
 	sf::Sprite bgSprite(bgTexture);
 	window.draw(bgSprite);
 	//draw winner and looser
-	sf::Sprite wSprite (*winner->getTexture());
-	wSprite.setPosition(sf::Vector2f((float)WIDTH/4, (float)HEIGHT/2));
-	window.draw(wSprite);
-	sf::Sprite lSprite (*looser->getTexture());
-	lSprite.setPosition(sf::Vector2f((float)3*WIDTH/4, (float)HEIGHT/2));
-	window.draw(lSprite);
+	winner->anim->render(sf::Vector2f((float)WIDTH/4, (float)HEIGHT/2), window);
+	looser->anim->render(sf::Vector2f((float)3*WIDTH/4, (float)HEIGHT/2), window);
 	//update
 	window.display();
 }

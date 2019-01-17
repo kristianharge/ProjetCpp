@@ -5,6 +5,7 @@
 #include "personnage.hh"
 #include "vie.hh"
 #include "map.hh"
+#include "animator.hh"
 //#include "force.hh"
 
 class Joueur{
@@ -20,10 +21,11 @@ public:
 	void setAdversaire(Joueur * j){adversaire = j;}
 	//geters
 	sf::Vector2f getPosition() const{return realPosition;};
-	sf::Texture *getTexture() const{return texture;};
 	//autres methodes
 	void decreaseLife(float diff);
 	bool mort();
+
+	Animator *anim;
 
 private:
 	char typeDeTile(sf::Vector2f point, sf::Vector2f dir, Map * map, char axe);
@@ -38,10 +40,7 @@ protected:
 	Personnage perso;
 	std::map<Touche, bool> actions;//actions lies aux touches
 
-
 	//variables sf
-	sf::Texture * texture;
-	sf::Sprite sprite;
 	sf::Vector2f realPosition;//position reelle dans la map
 	sf::Vector2f speedVector;//vecteur vitesse
 	std::vector<sf::SoundBuffer> buffers;
