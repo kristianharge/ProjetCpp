@@ -38,10 +38,13 @@ void SelectionPerso::select(){
 			break;
 		case 1:
 			persoFleches = (Personnage *) new Bob();
+			break;
 		case 2:
 			persoFleches = (Personnage *) new Homer();
+			break;
 		case 3:
 			persoFleches = (Personnage *) new Pb();
+			break;
 	}
 
 	switch(qsdzPos){
@@ -50,10 +53,13 @@ void SelectionPerso::select(){
 			break;
 		case 1:
 			persoQsdz = (Personnage *) new Bob();
+			break;
 		case 2:
 			persoQsdz = (Personnage *) new Homer();
+			break;
 		case 3:
 			persoQsdz = (Personnage *) new Pb();
+			break;
 	}
 	nextScreen = 1;
 }
