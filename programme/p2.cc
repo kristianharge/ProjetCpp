@@ -3,7 +3,7 @@
 #include "p2.hh"
 #include "variablesGlobales.hh"
 
-P2::P2(Personnage & p) : Joueur(p){
+P2::P2(Personnage * p) : Joueur(p){
 	vie = new Vie (WIDTH - 9*32, 2*32);
 	realPosition = sf::Vector2f(WIDTH - 7*32, 5*32);
 }

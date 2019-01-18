@@ -10,7 +10,7 @@ public:
 	Personnage(){};
 	~Personnage(){};
 	//getters
-	std::string getTexturePath() { return path; };
+	std::string getTexturePath() const {return path;};
 	float getVitesse() const { return vitesse; };
 	float getPtsAttaque() {return ptsAttaque;};
 	
@@ -19,5 +19,4 @@ protected:
 	float ptsAttaque; //points d'attaque
 	float vitesse; //vitesse deplacement
 	std::string path; //image du personnage
-	std::string * _path;
 };

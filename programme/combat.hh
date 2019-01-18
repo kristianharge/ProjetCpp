@@ -8,6 +8,7 @@
 class Combat : Ecran{
 	public:
 		Combat();
+		Combat(Personnage * pp1, Personnage * pp2);
 		~Combat();
 		void processInput();
 		void update();

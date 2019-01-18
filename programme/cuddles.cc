@@ -4,5 +4,5 @@
 Cuddles::Cuddles(){
 	ptsAttaque = 6.f;
 	vitesse = 5.f;
-	path = "../Images/Perso/Cuddles/normal.png";
+	path = "../Images/Perso/cuddles";
 }

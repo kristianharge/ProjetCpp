@@ -10,9 +10,24 @@
 
 Combat::Combat(){
 	map = new RickMap();
-    Personnage p = Cuddles();
-    p1 = new P1(p);
-	p2 = new P2(p);
+    Personnage * pp1 = new Cuddles();
+    Personnage * pp2 = new Cuddles();
+    p1 = new P1(pp1);
+	p2 = new P2(pp2);
+    p1->setAdversaire(p2);
+    p2->setAdversaire(p1);
+    music = new sf::Music();
+
+    if (!music->openFromFile("../musique/CombatStarWars.ogg"))
+        std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
+
+    music->play();
+}
+
+Combat::Combat(Personnage * pp1, Personnage * pp2){
+    map = new RickMap();
+    p1 = new P1(pp1);
+    p2 = new P2(pp2);
     p1->setAdversaire(p2);
     p2->setAdversaire(p1);
     music = new sf::Music();

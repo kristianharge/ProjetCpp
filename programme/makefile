@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-Wall -std=c++11
+CFLAGS=-Wall -std=c++11 -g
 LDFLAGS=-lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 EXEC=projet
 SRC= $(wildcard *.cc)

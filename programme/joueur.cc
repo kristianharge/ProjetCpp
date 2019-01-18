@@ -32,7 +32,7 @@ std::ostream &operator<<(std::ostream & out, Direction & d){
 	}
 };
 
-Joueur::Joueur(Personnage & p){
+Joueur::Joueur(Personnage * p){
 	perso = p;//on copie le personnage
 	
 	//on initialise les touches
@@ -47,12 +47,13 @@ Joueur::Joueur(Personnage & p){
 	if (!buffers[0].loadFromFile("../musique/Sounds/punch.wav"))
     std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
 
-	anim = new Animator(std::string("../Images/Perso/Cuddles"));
+	anim = new Animator(perso->getTexturePath());
 }
 
 Joueur::~Joueur(){
 	delete anim;
 	delete vie;
+	delete perso;
 };
 
 //methods
@@ -154,7 +155,7 @@ void Joueur::attaqueCourte(){
 			if(positionCible.y + TAILLEPERSO_Y >= realPosition.y &&	positionCible.y <= realPosition.y + TAILLEPERSO_Y){//traitement vertical
 				sound.setBuffer(buffers[0]);
 				sound.play();
-				adversaire->decreaseLife(perso.getPtsAttaque());
+				adversaire->decreaseLife(perso->getPtsAttaque());
 			}
 	}
 }

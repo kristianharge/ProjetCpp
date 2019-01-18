@@ -11,7 +11,7 @@
 class Joueur{
 
 public:
-	Joueur(Personnage & p);
+	Joueur(Personnage * p);
 	virtual ~Joueur();
 	//methodes du moteur de jeu
 	virtual void processInput() = 0;
@@ -37,7 +37,7 @@ private:
 protected:
 	Vie *vie;
 	Joueur *adversaire;
-	Personnage perso;
+	Personnage * perso;
 	std::map<Touche, bool> actions;//actions lies aux touches
 
 	//variables sf

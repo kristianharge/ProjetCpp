@@ -7,7 +7,7 @@
 class P2 : public Joueur{
 
 public:
-	P2(Personnage & p);
+	P2(Personnage * p);
 	~P2();
 
 	void processInput();
