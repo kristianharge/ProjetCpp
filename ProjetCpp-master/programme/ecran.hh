@@ -6,7 +6,7 @@ class Ecran{
 
 public:
 	Ecran(){nextScreen = -1;};
-	virtual ~Ecran(){ delete music;};
+	virtual ~Ecran(){delete music;};
 	
 	virtual void processInput() = 0;
 	virtual void update() = 0;

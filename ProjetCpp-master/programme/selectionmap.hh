@@ -10,7 +10,7 @@ class SelectionMap : Ecran{
 	public:
 		SelectionMap(sf::RenderWindow & window);
 		~SelectionMap();
-		void processInput(){};
+		void processInput();
 		void update(){};
 		void render(sf::RenderWindow & window);
 
@@ -29,8 +29,10 @@ class SelectionMap : Ecran{
 		
 		sf::Texture R;
 		sf::Texture S;
+		sf::Texture bgTexture;
 	
 		sf::Sprite r;
 		sf::Sprite s;
+		sf::Sprite bgSprite;
 		
 };

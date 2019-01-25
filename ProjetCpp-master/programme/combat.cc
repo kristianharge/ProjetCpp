@@ -27,7 +27,6 @@ Combat::Combat(Personnage * pp1, Personnage * pp2, Map * m){
 
 Combat::~Combat(){
     delete map;
-    delete music;
     //p1 et p2 sont delete dans gameOver
 }
 

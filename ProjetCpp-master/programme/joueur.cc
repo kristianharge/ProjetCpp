@@ -47,7 +47,7 @@ Joueur::Joueur(Personnage * p){
 
 	if (!buffers[0].loadFromFile("../musique/Sounds/punch.wav"))
     std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
-
+	
 	anim = new Animator(perso->getTexturePath());
 }
 
@@ -68,9 +68,9 @@ void Joueur::decreaseLife(float diff){
 
 //on applique les affets de la gravite
 void Joueur::gravite(){
-	float g = 0.1f;
+	float g = 0.2f;
 	
-	if(speedVector.y != 4.f)
+	if(speedVector.y != 6.f)
 		speedVector.y += g;
 	
 }
@@ -130,17 +130,17 @@ void Joueur::mouvement(Map * map){
 	gravite();//gravité
 	if(actions[gauche]){
 		speedVector.x = -4.f; 
-		anim = new Animator(perso->getTexturePath());
+		//anim = new Animator(perso->getTexturePath());
 	}
 	else if(actions[droite]){
 		speedVector.x = 4.f; 
-		anim = new Animator(perso->getTexturePath());
+		//anim = new Animator(perso->getTexturePath());
 	}
 
 	if(actions[haut]){
 		if(vecteurContraintes(speedVector, map).y < 0.f){//contrainte vers le haut donc on touche par terre
-			speedVector += sf::Vector2f(0.f,-5.f);
-			anim = new Animator(perso->getTexturePath());
+			speedVector += sf::Vector2f(0.f,-7.f);
+			//anim = new Animator(perso->getTexturePath());
 		}
 	}
 
@@ -154,9 +154,7 @@ void Joueur::attaqueCourte(){
 	sf::Vector2f positionCible = adversaire->getPosition();
 
 	if(actions[ac]){
-	 
-		anim = new Animator(perso->getTexturePath()+"/attgauche");
-		
+		anim->transition = 2;
 		//on agis sur une tile adjacente
 		if(positionCible.x + TAILLEPERSO_X >= realPosition.x && positionCible.x <= realPosition.x + TAILLEPERSO_X + COTE && positionCible.x <= realPosition.x)//traitement horizontal
 			if(positionCible.y + TAILLEPERSO_Y >= realPosition.y &&	positionCible.y <= realPosition.y + TAILLEPERSO_Y){//traitement vertical
@@ -164,17 +162,14 @@ void Joueur::attaqueCourte(){
 				sound.play();
 				adversaire->decreaseLife(perso->getPtsAttaque());
 			}
-	}
-	
-//	anim = new Animator(perso->getTexturePath());
-	
+	}	
 }
 
 void Joueur::attaqueCourteLeft(){ 
 	sf::Vector2f positionCible = adversaire->getPosition();
 	
 	if(actions[ac2]){
-		anim = new Animator(perso->getTexturePath()+"/attdroite");
+		anim->transition = 1;
 		//on agis sur une tile adjacente
 		if(positionCible.x + TAILLEPERSO_X >= realPosition.x && positionCible.x <= realPosition.x + TAILLEPERSO_X + COTE && positionCible.x >= realPosition.x)//traitement horizontal
 			if(positionCible.y + TAILLEPERSO_Y >= realPosition.y &&	positionCible.y <= realPosition.y + TAILLEPERSO_Y){//traitement vertical
@@ -182,10 +177,7 @@ void Joueur::attaqueCourteLeft(){
 				sound.play();
 				adversaire->decreaseLife(perso->getPtsAttaque());
 			}
-			
 	}
-	
-	//anim = new Animator(perso->getTexturePath());
 }
 
 //on traite la dinamique (mouvements, vie, etc)
@@ -194,17 +186,17 @@ void Joueur::update(Map * map){
 	mouvement(map);
 	attaqueCourte();
 	attaqueCourteLeft();
+	anim->update();
 }
 
 void Joueur::render(sf::RenderWindow & w, Map * map){
 	vie->render(w);
 	anim->render(realPosition,w);
-	
 }
 
 bool Joueur::mort(){
 	if (vie->getLevel() == 0){
-		anim = new Animator(perso->getTexturePath() + "/gameover");
+		anim->transition = 3;
 		return true;
 		}
 	return false;

@@ -31,6 +31,10 @@ SelectionMap::SelectionMap(sf::RenderWindow & window){
 	{
 	    std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
 	}
+	if (!bgTexture.loadFromFile("../Images/SelectionMap/bg.png"))
+	{
+	    std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
+	}
 
 	music = new sf::Music();
 
@@ -55,11 +59,9 @@ void SelectionMap::select(){
 	nextScreen = 2;	
 }
 
-
-void SelectionMap::render(sf::RenderWindow & window){
+void SelectionMap::processInput(){
 	static bool interrupt = false;//nous permet de controler le bouton attaque courte comme interruption
 
-	window.clear();
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
 		if(!interrupt){
 			flechesPos = 0;
@@ -78,7 +80,17 @@ void SelectionMap::render(sf::RenderWindow & window){
 	else if (interrupt)
 		interrupt = false;
 
-	
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::M)){
+		select();
+	}
+}
+
+void SelectionMap::render(sf::RenderWindow & window){
+
+	window.clear();
+	bgSprite.setTexture(bgTexture);
+	window.draw(bgSprite);
+		
 	r.setTexture(R);
 	r.setPosition(positions_map[0]);
 	window.draw(r);
@@ -92,10 +104,6 @@ void SelectionMap::render(sf::RenderWindow & window){
 	window.draw(flechesSelector);
 	
 	window.display();
-
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::M)){
-		select();
-	}
 
    sf::Event event;
     while (window.pollEvent(event))

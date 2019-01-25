@@ -70,7 +70,6 @@ SelectionPerso::~SelectionPerso(){
 	free(positions);
 	free (sprites);
 	free (textures);
-	delete music;
 }
 
 void SelectionPerso::select(){
@@ -189,7 +188,6 @@ void SelectionPerso::render(sf::RenderWindow & window){
 		}
 	}else if (interrupt)
 		interrupt = false;
-
 
 	flechesSelector.setTexture(flechesTexture);
 	flechesSelector.setPosition(positions[flechesPos]);
