@@ -7,6 +7,7 @@
 #include "combat.hh"
 #include "selectionperso.hh"
 #include "variablesGlobales.hh"
+#include "accueil.hh"
 
 using namespace std;
 
@@ -21,7 +22,7 @@ int main()
 
     //ecran
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Sunny Smash");//defined in map.hh
-    Ecran *ec = (Ecran*) new SelectionPerso(window);
+    Ecran *ec = (Ecran*) new Accueil(window);
     //Ecran *ec = (Ecran*) new Combat();
 
     //gestion du temps
@@ -33,13 +34,21 @@ int main()
         //gestion du temps
         auto t0 = Time::now();
         switch(ec->nextScreen){
+            case 0:
+                delete ec;
+                ec = (Ecran *) new Accueil(window);//remplacer par accueil
+                break;
             case 1:
+                delete ec;
+                ec = (Ecran *) new SelectionPerso(window);//remplacer par accueil
+                break;
+            case 2:
                 pf = ((SelectionPerso*)ec)->persoFleches;
                 pq = ((SelectionPerso*)ec)->persoQsdz;
                 delete ec;
                 ec = (Ecran*) new Combat(pf, pq);
                 break;
-            case 2:
+            case 3:
                 w = ((Combat*)ec)->winner;
                 l = ((Combat*)ec)->looser;
                 delete ec;

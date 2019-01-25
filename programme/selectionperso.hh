@@ -23,6 +23,8 @@ class SelectionPerso : Ecran{
 		void select();
 
 		sf::Vector2f *positions;
+		sf::Sprite **sprites;
+		sf::Texture **textures;
 		int nbPerso;
 
 		sf::Sprite flechesSelector;

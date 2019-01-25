@@ -40,7 +40,7 @@ Combat::Combat(Personnage * pp1, Personnage * pp2){
 
 Combat::~Combat(){
     delete map;
-    delete music;
+    delete music;   
     //p1 et p2 sont delete dans gameOver
 }
 
@@ -56,12 +56,12 @@ void Combat::update(){
     if(p1->mort()){
         winner = p2;
         looser = p1;
-        nextScreen = 2;
+        nextScreen = 3;
     }
     else if(p2->mort()){
         winner = p1;
         looser = p2;
-        nextScreen = 2;
+        nextScreen = 3;
     }
 }
 
@@ -70,8 +70,9 @@ void Combat::render(sf::RenderWindow & window){
    sf::Event event;
     while (window.pollEvent(event))
     {
-        if (event.type == sf::Event::Closed)
+        if (event.type == sf::Event::Closed){
             window.close();
+        }
     }
 
     window.clear();
