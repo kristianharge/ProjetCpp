@@ -2,7 +2,7 @@
 #include "bob.hh"
 
 Bob::Bob(){
-	ptsAttaque = 7.f;
+	ptsAttaque = 5.f;
 	vitesse = 4.f;
 	path = "../Images/Perso/bob";
 }

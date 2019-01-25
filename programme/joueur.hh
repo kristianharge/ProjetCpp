@@ -26,6 +26,7 @@ public:
 	bool mort();
 
 	Animator *anim;
+	
 
 private:
 	char typeDeTile(sf::Vector2f point, sf::Vector2f dir, Map * map, char axe);
@@ -33,7 +34,8 @@ private:
 	void gravite();
 	void mouvement(Map * map);
 	void attaqueCourte();
-
+	void attaqueCourteLeft();
+	
 protected:
 	Vie *vie;
 	Joueur *adversaire;

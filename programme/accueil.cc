@@ -17,14 +17,12 @@ Accueil::Accueil(sf::RenderWindow & window){
 
     if (!music->openFromFile("../musique/MainSuperSmash.ogg"))
         std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
-
     music->play();
 	
 	window.display();
 }
 
 Accueil::~Accueil(){
-	delete music;
 	
 }
 
@@ -44,7 +42,3 @@ void Accueil::render(sf::RenderWindow & window){
             window.close();
     }
 }
-
-
-		
- 

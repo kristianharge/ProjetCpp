@@ -13,6 +13,7 @@ P1::~P1(){
 
 void P1::processInput(){
 	static bool acInterrupt = false;//nous permet de controler le bouton attaque courte comme interruption
+	static bool ac2Interrupt = false;
 
 	if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		actions[gauche] = true;
@@ -34,7 +35,7 @@ void P1::processInput(){
 	else
 		actions[bas] = false;
 
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::RControl)){
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::L)){
 		if(!acInterrupt){
 			actions[ac] = true;
 			acInterrupt = true;
@@ -44,4 +45,17 @@ void P1::processInput(){
 		actions[ac] = false;
 		acInterrupt = false;
 	}
+	
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::M)){
+		if(!ac2Interrupt){
+			actions[ac2] = true;
+			ac2Interrupt = true;
+		}else
+			actions[ac2] = false;
+	}else if (ac2Interrupt) {
+		actions[ac2] = false;
+		ac2Interrupt = false;
+	}
+	
+	
 }

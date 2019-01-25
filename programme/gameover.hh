@@ -16,4 +16,5 @@ class GameOver : Ecran{
 		sf::Sprite image;
 		Joueur * winner;
 		Joueur * looser;
+		
 };

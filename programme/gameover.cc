@@ -25,6 +25,12 @@ GameOver::GameOver(sf::RenderWindow & window, Joueur * winner, Joueur * looser) 
 	inst.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
 	inst.setPosition(sf::Vector2f(WIDTH/2, 3*HEIGHT/4));
 	window.draw(inst);
+	music = new sf::Music();
+
+    if (!music->openFromFile("../musique/CombatStarWars.ogg"))
+        std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
+
+    music->play();
 	//update
 	window.display();
 }

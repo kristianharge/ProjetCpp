@@ -12,5 +12,5 @@
 #define TILEDTAILLEPERSO_X 2
 #define GRAVITY 0.2f
 
-enum Touche {gauche, haut, droite, bas, ac};
+enum Touche {gauche, haut, droite, bas, ac, ac2};
 enum Direction {n, ne, e, se, s, sw, w, nw, null};//les hit directions du mouvement

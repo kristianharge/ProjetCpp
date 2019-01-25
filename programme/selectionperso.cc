@@ -70,7 +70,6 @@ SelectionPerso::~SelectionPerso(){
 	free(positions);
 	free (sprites);
 	free (textures);
-	delete music;
 }
 
 void SelectionPerso::select(){
@@ -103,7 +102,7 @@ void SelectionPerso::select(){
 			persoQsdz = (Personnage *) new Pb();
 			break;
 	}
-	nextScreen = 2;
+	nextScreen = 3;
 }
 
 
@@ -189,7 +188,6 @@ void SelectionPerso::render(sf::RenderWindow & window){
 		}
 	}else if (interrupt)
 		interrupt = false;
-
 
 	flechesSelector.setTexture(flechesTexture);
 	flechesSelector.setPosition(positions[flechesPos]);

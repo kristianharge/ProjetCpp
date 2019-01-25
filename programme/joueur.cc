@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <cmath>
+#include <unistd.h>
 #include "joueur.hh"
 #include "variablesGlobales.hh"
 
@@ -46,7 +47,7 @@ Joueur::Joueur(Personnage * p){
 
 	if (!buffers[0].loadFromFile("../musique/Sounds/punch.wav"))
     std::cout << "Error in line " << __LINE__ << " of file " << __FILE__ << std::endl;
-
+	
 	anim = new Animator(perso->getTexturePath());
 }
 
@@ -67,9 +68,9 @@ void Joueur::decreaseLife(float diff){
 
 //on applique les affets de la gravite
 void Joueur::gravite(){
-	float g = 0.1f;
+	float g = 0.2f;
 	
-	if(speedVector.y != 4.f)
+	if(speedVector.y != 6.f)
 		speedVector.y += g;
 	
 }
@@ -129,14 +130,17 @@ void Joueur::mouvement(Map * map){
 	gravite();//gravité
 	if(actions[gauche]){
 		speedVector.x = -4.f; 
+		//anim = new Animator(perso->getTexturePath());
 	}
 	else if(actions[droite]){
 		speedVector.x = 4.f; 
+		//anim = new Animator(perso->getTexturePath());
 	}
 
 	if(actions[haut]){
 		if(vecteurContraintes(speedVector, map).y < 0.f){//contrainte vers le haut donc on touche par terre
-			speedVector += sf::Vector2f(0.f,-5.f);
+			speedVector += sf::Vector2f(0.f,-7.f);
+			//anim = new Animator(perso->getTexturePath());
 		}
 	}
 
@@ -150,8 +154,24 @@ void Joueur::attaqueCourte(){
 	sf::Vector2f positionCible = adversaire->getPosition();
 
 	if(actions[ac]){
+		anim->transition = 2;
 		//on agis sur une tile adjacente
-		if(positionCible.x + TAILLEPERSO_X + COTE >= realPosition.x && positionCible.x <= realPosition.x + TAILLEPERSO_X + COTE)//traitement horizontal
+		if(positionCible.x + TAILLEPERSO_X >= realPosition.x && positionCible.x <= realPosition.x + TAILLEPERSO_X + COTE && positionCible.x <= realPosition.x)//traitement horizontal
+			if(positionCible.y + TAILLEPERSO_Y >= realPosition.y &&	positionCible.y <= realPosition.y + TAILLEPERSO_Y){//traitement vertical
+				sound.setBuffer(buffers[0]);
+				sound.play();
+				adversaire->decreaseLife(perso->getPtsAttaque());
+			}
+	}	
+}
+
+void Joueur::attaqueCourteLeft(){ 
+	sf::Vector2f positionCible = adversaire->getPosition();
+	
+	if(actions[ac2]){
+		anim->transition = 1;
+		//on agis sur une tile adjacente
+		if(positionCible.x + TAILLEPERSO_X >= realPosition.x && positionCible.x <= realPosition.x + TAILLEPERSO_X + COTE && positionCible.x >= realPosition.x)//traitement horizontal
 			if(positionCible.y + TAILLEPERSO_Y >= realPosition.y &&	positionCible.y <= realPosition.y + TAILLEPERSO_Y){//traitement vertical
 				sound.setBuffer(buffers[0]);
 				sound.play();
@@ -165,6 +185,8 @@ void Joueur::update(Map * map){
 	vie->update(0.f);//on rafraichit la vie
 	mouvement(map);
 	attaqueCourte();
+	attaqueCourteLeft();
+	anim->update();
 }
 
 void Joueur::render(sf::RenderWindow & w, Map * map){
@@ -173,7 +195,9 @@ void Joueur::render(sf::RenderWindow & w, Map * map){
 }
 
 bool Joueur::mort(){
-	if (vie->getLevel() == 0)
+	if (vie->getLevel() == 0){
+		anim->transition = 3;
 		return true;
+		}
 	return false;
 }

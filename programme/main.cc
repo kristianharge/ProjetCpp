@@ -6,8 +6,9 @@
 #include "gameover.hh"
 #include "combat.hh"
 #include "selectionperso.hh"
-#include "variablesGlobales.hh"
+#include "selectionmap.hh"
 #include "accueil.hh"
+#include "variablesGlobales.hh"
 
 using namespace std;
 
@@ -18,12 +19,12 @@ int main()
 {
     Personnage *pf;
     Personnage *pq;
+    Map *m;
     Joueur *w, *l;
-
+	
     //ecran
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Sunny Smash");//defined in map.hh
     Ecran *ec = (Ecran*) new Accueil(window);
-    //Ecran *ec = (Ecran*) new Combat();
 
     //gestion du temps
     int usOfWait;
@@ -34,21 +35,26 @@ int main()
         //gestion du temps
         auto t0 = Time::now();
         switch(ec->nextScreen){
-            case 0:
+    		case 0:
                 delete ec;
-                ec = (Ecran *) new Accueil(window);//remplacer par accueil
-                break;
+    			ec = (Ecran*) new Accueil(window);
+    			break;
             case 1:
                 delete ec;
-                ec = (Ecran *) new SelectionPerso(window);//remplacer par accueil
+                ec = (Ecran*) new SelectionMap(window);
                 break;
             case 2:
+                m = ((SelectionMap*)ec)->mapFleches;
+                delete ec;  
+                ec = (Ecran*) new SelectionPerso(window);
+                break;
+            case 3:
                 pf = ((SelectionPerso*)ec)->persoFleches;
                 pq = ((SelectionPerso*)ec)->persoQsdz;
                 delete ec;
-                ec = (Ecran*) new Combat(pf, pq);
+                ec = (Ecran*) new Combat(pf, pq, m);
                 break;
-            case 3:
+            case 4:
                 w = ((Combat*)ec)->winner;
                 l = ((Combat*)ec)->looser;
                 delete ec;
@@ -66,6 +72,6 @@ int main()
         usleep(usOfWait);
     }
     delete ec;
-
+	 
     return 0;
 }
